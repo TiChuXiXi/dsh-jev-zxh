@@ -217,6 +217,29 @@ function summarize(value) {
   return lines.join('\n')
 }
 
+/**
+ * 取密钥，优先级：条目 config 的字面值 → 凭据库（引用名 = `apiKeyEnv`）→ 进程环境变量。
+ *
+ * 中间那层正是「设置 → 插件」页那张配置卡写入的地方：浏览器半区把密钥交给凭据域，
+ * 而不是写进设置文档，所以密钥字面值不会随任何响应回传。「设置 → 模型」页给
+ * openrouter 写的也是同一个引用（`OPENROUTER_API_KEY`），两条路都通。
+ *
+ * @param ctx - 插件上下文，用它的可选 `credentials` 服务。
+ * @param literal - 条目 config 里写的密钥字面值，空串表示没写。
+ * @param ref - 凭据引用名，同时兼作环境变量名。
+ * @returns 可用的密钥，取不到时为空串。
+ */
+async function resolveApiKey(ctx, literal, ref) {
+  if (literal !== '') return literal
+  const credentials = ctx.get('credentials')
+  if (credentials !== undefined) {
+    const hit = await credentials.resolve(ref)
+    const stored = typeof hit?.value === 'string' ? hit.value.trim() : ''
+    if (stored !== '') return stored
+  }
+  return (process.env[ref] ?? '').trim()
+}
+
 export function apply(ctx, config) {
   const logger = ctx.get('logger')
 
@@ -309,13 +332,11 @@ export function apply(ctx, config) {
       // volatile 字段是 Volatile<T> 引用：值必须在【调用时】经 .get() 读。
       // loader 会原地更新引用而不重挂插件，所以「设置 → 插件」页改完立即生效。
       const configuredKey = (config.apiKey.get() ?? '').trim()
-      const apiKeyEnv = (config.apiKeyEnv.get() ?? '').trim()
-      const apiKey = configuredKey !== ''
-        ? configuredKey
-        : (process.env[apiKeyEnv] ?? '').trim()
+      const apiKeyEnv = (config.apiKeyEnv.get() ?? '').trim() || 'OPENROUTER_API_KEY'
+      const apiKey = await resolveApiKey(ctx, configuredKey, apiKeyEnv)
       if (apiKey === '') {
         throw new Error(
-          `No OpenRouter API key: set "apiKey" for entry dsh-jev in 设置 → 插件, or export ${apiKeyEnv}.`,
+          `No API key for Jev: fill the API key on the dsh-jev card in 设置 → 插件, or store/export ${apiKeyEnv}.`,
         )
       }
       if (args.state === undefined || args.state === null) {

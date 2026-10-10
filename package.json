@@ -1,15 +1,17 @@
 {
   "name": "dsh-jev-zxh",
-  "version": "0.1.0",
-  "description": "DSH plugin: expose TypeSafe Jev (System One decision model) as the model-callable jev_decide tool.",
+  "version": "0.1.1",
+  "description": "DSH plugin: expose TypeSafe Jev (System One decision model) as the model-callable jev_decide tool, with a settings card on the Plugins page.",
   "type": "module",
   "main": "index.js",
   "exports": {
     ".": "./index.js",
+    "./client": "./client.js",
     "./package.json": "./package.json"
   },
   "files": [
     "index.js",
+    "client.js",
     "cordis.patch.yml",
     "README.md",
     "LICENSE"
@@ -20,12 +22,23 @@
     },
     "bundle": {
       "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-ui-plugin-manager",
+        "@deepseek-ai/dsh-api-remotes"
+      ]
     }
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "^4.0.4",
     "@deepseek-ai/dsh-tools": "^0.2.0-rc.2",
-    "@deepseek-ai/schemastery": "^3.18.4"
+    "@deepseek-ai/schemastery": "^3.18.4",
+    "@deepseek-ai/dsh-client-ui-primitives": ">=0.2.0-rc.2",
+    "@deepseek-ai/dsh-api-remotes": ">=0.2.0-rc.2"
   },
   "peerDependenciesMeta": {
     "@deepseek-ai/cordis": {
@@ -35,6 +48,12 @@
       "optional": true
     },
     "@deepseek-ai/schemastery": {
+      "optional": true
+    },
+    "@deepseek-ai/dsh-client-ui-primitives": {
+      "optional": true
+    },
+    "@deepseek-ai/dsh-api-remotes": {
       "optional": true
     }
   },
