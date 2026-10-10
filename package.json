@@ -1,6 +1,6 @@
 {
   "name": "dsh-jev-zxh",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "DSH plugin: expose TypeSafe Jev (System One decision model) as the model-callable jev_decide tool, with a settings card on the Plugins page.",
   "type": "module",
   "main": "index.js",

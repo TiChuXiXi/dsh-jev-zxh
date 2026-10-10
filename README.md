@@ -16,7 +16,7 @@ Jev 不写文本。给它一份 `state` 和若干**带类型的问题**，它只
 
 | 项目 | 值 |
 |---|---|
-| 插件版本 | `0.1.1` |
+| 插件版本 | `0.1.2` |
 | npm 包名 | `dsh-jev-zxh` |
 | 插件行 id / 工具名 | `dsh-jev` / `jev_decide` |
 | 仓库 | <https://github.com/TiChuXiXi/dsh-jev-zxh> |
@@ -34,10 +34,10 @@ Jev 不写文本。给它一份 `state` 和若干**带类型的问题**，它只
 dsh plugin --profile web add dsh-jev-zxh
 ```
 
-**必须重启 `dsh`**（bundle 层在进程启动时加载）。启动日志里应出现
+**必须重启 `dsh`**（宿主半区是进程内代码）。启动日志里应出现
 `[dsh-jev] jev_decide registered (model=typesafe/jev-1.13)`。
 
-浏览器半区是客户端模块，装完还要**刷新页面**（F5）才会出现在「插件」页上。
+然后**刷新页面**（F5）：浏览器半区是客户端模块。配置卡出现在「插件」页里 `dsh-jev-zxh` 这个 bundle 的详情页上——描述与组件列表之间。
 
 本包**不带任何密钥**，装完要填一次配置，见下节。
 
@@ -144,6 +144,7 @@ pwsh -File .\uninstall.ps1    # 反操作
 
 | 版本 | 主要变化 |
 |---|---|
+| **0.1.2** | 配置卡改注册进 `plugins.bundle.config`（键 = 包名）：它渲染在「插件」页该 bundle 详情页的描述与组件列表之间。`plugins.item` 的目录写明是官方设置页占用的，第三方 bundle 不该用 |
 | **0.1.1** | 新增**浏览器半区**：在「插件」页注册一张配置卡（API Key / 接口地址 / 模型）。密钥走凭据库（`remote.credentials.set`，引用名取 `apiKeyEnv`），端点与模型走 profile 设置文档；宿主半区的密钥解析顺序改为 `config.apiKey` → 凭据库 → 环境变量 |
 | 0.1.0 | 首个发布版：`jev_decide` 工具（choice / noul / score 三原语）、严格校验与失败即抛、包内不含任何密钥 |
 

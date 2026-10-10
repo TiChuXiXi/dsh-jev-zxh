@@ -5,7 +5,8 @@
  * 下发的客户端会按 Config schema 自动生成表单（`dsh-settings` 文档原话：
  * `autoGenerate` 默认为真，但 "no shipped client does so yet"）。所以哪怕宿主侧
  * Config 已经把字段标成 volatile，页面上也不会自己长出表单 —— 只能由插件自己的
- * 浏览器半区注册进 `plugins.item`。
+ * 浏览器半区注册进 `plugins.bundle.config`（键 = 包名，渲染在该 bundle 详情页的
+ * 描述与组件列表之间；`plugins.item` 是官方设置页占用的，别用）。
  *
  * 形态与官方 `dsh-client-ui-settings-web-search` 完全一致：
  *   · 端点 / 模型走 `ctx.configForms`（作用域 = profile 条目 id `dsh-jev`），
@@ -35,6 +36,8 @@ window.__ModuleLoader__.load({
 
     /** 本插件在 profile 里的条目 id —— 同时是设置命名空间与 configForms 作用域 id。 */
     const ENTRY_ID = 'dsh-jev'
+    /** 包名 —— plugins.bundle.config 这个 keyed slot 按它寻址。 */
+    const BUNDLE_ID = 'dsh-jev-zxh'
     /** 字典命名空间（本包自有）。 */
     const NS = 'settings.dshJev'
     /** 本节没写 apiKeyEnv 时用的凭据引用。 */
@@ -295,14 +298,15 @@ window.__ModuleLoader__.load({
       ctx.effect(() => ctx.remote.$on('credentials/reference-updated', (ref) => {
         card.refreshCredential(ref)
       }), 'dsh-jev: credential invalidations')
-      ctx.effect(() => ctx.configForms.whileServed([ENTRY_ID], () => ctx.slots.inject('plugins.item', () => ctx.slots.register({
-        name: 'plugins.item',
-        id: 'dsh-jev',
-        order: 50,
-        label: () => t('title'),
+      // 注册进 plugins.bundle.config（keyed，键 = 包名）：它渲染在「插件」页该 bundle
+      // 详情页里、描述与组件列表之间。**不要**用 plugins.item —— 那个 slot 的目录写明
+      // 它由官方设置页占用，第三方 bundle 的配置属于 plugins.bundle.config / row.config。
+      ctx.effect(() => ctx.configForms.whileServed([ENTRY_ID], () => ctx.slots.inject('plugins.bundle.config', () => ctx.slots.register({
+        name: 'plugins.bundle.config',
+        key: BUNDLE_ID,
         locale: NS,
         inject: () => card.inject(),
-      }, JevCard))), 'dsh-jev: page')
+      }, JevCard))), 'dsh-jev: bundle configuration')
     }
 
     exports.NS = NS

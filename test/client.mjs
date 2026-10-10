@@ -239,10 +239,10 @@ const scope = makeScope({ apiKeyEnv: 'OPENROUTER_API_KEY', endpoint: 'https://op
 const ctx = makeContext({ 'dsh-jev': scope })
 client.apply(ctx)
 check('注册了字典', ctx.state.dictionaries.length === 1 && ctx.state.dictionaries[0].namespace === 'settings.dshJev')
-check('注册进 plugins.item', ctx.state.registrations.length === 1 && ctx.state.registrations[0].options.name === 'plugins.item')
+check('注册进 plugins.bundle.config', ctx.state.registrations.length === 1 && ctx.state.registrations[0].options.name === 'plugins.bundle.config')
 const registration = ctx.state.registrations[0]
-check('卡片 id 与排序', registration.options.id === 'dsh-jev' && registration.options.order === 50, JSON.stringify(registration.options))
-check('label 是函数且返回标题', typeof registration.options.label === 'function' && registration.options.label() === 'Jev 决策', String(registration.options.label?.()))
+check('key 是包名', registration.options.key === 'dsh-jev-zxh', JSON.stringify(registration.options))
+check('带 locale 命名空间', registration.options.locale === 'settings.dshJev')
 check('监视了凭据引用变化', ctx.state.credentialEvents.length === 1 && ctx.state.credentialEvents[0].event === 'credentials/reference-updated')
 
 const face = registration.options.inject()
