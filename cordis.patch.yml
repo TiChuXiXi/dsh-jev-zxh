@@ -1,0 +1,21 @@
+# dsh-jev-zxh bundle patch —— 把插件行插入 profile 组合。
+# 行按【包名】引用（不是相对路径）：patch 只贡献配置，不改变 loader 的基准目录。
+# 约定同 dsh-git-vcs / dsh-web-search-pro：行 id 用短名（dsh-jev），name 才是包名。
+#
+# 安装：dsh plugin --profile <profile> add dsh-jev-zxh
+#
+# 这里【刻意不带任何 config】。apiKey / endpoint / model 由安装者自己填，两条路：
+#
+#   1) 「设置 → 插件」页里改 —— Config 的 volatile 字段会渲染成表单，
+#      apiKey 标了 role('secret')，读取时被脱敏、不会回显到浏览器；
+#   2) 在 profile 自己的 cordis.patch.yml 里按 id 覆盖：
+#
+#        - id: dsh-jev
+#          config:
+#            apiKey: 'sk-or-v1-...'
+#            endpoint: 'https://api.typesafe.ai/v1/systemone'
+#
+# 密钥绝不能写回本文件：它随包发布到公开 npm。
+- insert:
+    - id: dsh-jev
+      name: dsh-jev-zxh
